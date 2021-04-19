@@ -14,7 +14,12 @@ def main():
     bearer_token = sys.argv[1]
     api_call_header = create_headers(bearer_token)
 
-    userids_url = get_userids_url()
+    if (len(sys.argv) < 3):
+    	raise Exception("Missing users to base to-follow recommendation on")
+
+    username_list = sys.argv[2:]
+
+    userids_url = get_userids_url(username_list)
     userids_response = connect_to_endpoint(userids_url)
     userids = get_userids(userids_response)
 
@@ -70,9 +75,9 @@ def create_headers(bearer_token):
     headers = {"Authorization": "Bearer {}".format(bearer_token)}
     return headers
 
-def get_userids_url():
-	# TODO take this from cmd line
-	usernames = "usernames=divijvaidya,__spd__"
+def get_userids_url(username_list):
+	usernames = "usernames=" + ','.join(username_list)
+	print(usernames)
 	url = "https://api.twitter.com/2/users/by?{}".format(usernames)
 	return url
 
@@ -83,8 +88,6 @@ def get_userids(userids_response):
 		userids.add(user["id"])
 
 	return userids
-
-
 
 if __name__ == "__main__":
     main()
